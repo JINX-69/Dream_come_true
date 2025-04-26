@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dark Romance Story Creator</title>
+  <style>
+    body {
+      font-family: 'Georgia', serif;
+      background: #0a0a0a url('https://images.unsplash.com/photo-1500731528332-83bdb86fd34e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #f8f8f8;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #e63946;
+      text-shadow: 2px 2px 4px #000;
+    }
+    form {
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 700px;
+      margin: 0 auto;
+      box-shadow: 0 0 15px #800000;
+    }
+    .character-entry {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: 1px solid #555;
+      background: #222;
+      color: #eee;
+    }
+    button {
+      background-color: #800000;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #a00000;
+    }
+    .story, .download-btn {
+      background: rgba(0, 0, 0, 0.8);
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 700px;
+      margin: 30px auto 0;
+      box-shadow: 0 0 15px #800000;
+    }
+    .add-character-btn {
+      background-color: #4b0082;
+    }
+    .add-character-btn:hover {
+      background-color: #6a0dad;
+    }
+    p {
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Dark Romance Story Creator</h1>
+
+  <form id="storyForm">
+    <div id="charactersContainer">
+      <div class="character-entry">
+        <input type="text" name="characterName" placeholder="Character Name" required>
+        <input type="text" name="characterTrait" placeholder="Character Trait (mysterious, brooding, etc.)" required>
+      </div>
+    </div>
+
+    <button type="button" class="add-character-btn" onclick="addCharacter()">+ Add Another Character</button>
+
+    <textarea id="scenario" placeholder="Describe the forbidden situation..." rows="4" required></textarea>
+    
+    <button type="submit">Weave the Story</button>
+  </form>
+
+  <div class="story" id="storyOutput" style="display:none;"></div>
+  <div class="download-btn" id="downloadSection" style="display:none; text-align:center;">
+    <button onclick="downloadStory()">Download Your Dark Tale</button>
+  </div>
+
+  <script>
+    const form = document.getElementById('storyForm');
+    const output = document.getElementById('storyOutput');
+    const downloadSection = document.getElementById('downloadSection');
+    let finalStoryText = '';
+
+    function addCharacter() {
+      const container = document.getElementById('charactersContainer');
+      const div = document.createElement('div');
+      div.className = 'character-entry';
+      div.innerHTML = `
+        <input type="text" name="characterName" placeholder="Character Name" required>
+        <input type="text" name="characterTrait" placeholder="Character Trait" required>
+      `;
+      container.appendChild(div);
+    }
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const names = Array.from(document.getElementsByName('characterName')).map(input => input.value);
+      const traits = Array.from(document.getElementsByName('characterTrait')).map(input => input.value);
+      const scenario = document.getElementById('scenario').value;
+
+      const twists = [
+        "a secret vow of love was broken",
+        "a haunting memory returned to claim them",
+        "their bloodlines were cursed",
+        "an ancient prophecy entangled their souls",
+        "betrayal by a trusted heart shattered everything",
+        "the darkness whispered promises neither could ignore",
+        "a forbidden ritual bound their fates forever"
+      ];
+
+      const randomTwist = twists[Math.floor(Math.random() * twists.length)];
+
+      let story = `<h2>Your Dark Tale</h2><p>`;
+
+      names.forEach((name, index) => {
+        story += `<strong>${name}</strong>, known for being ${traits[index]}, `;
+      });
+
+      story += `became entwined in a tale darker than night: "${scenario}". <br><br>Yet, as passion collided with peril, ${randomTwist}. 
+      Torn between love and doom, they danced through shadows, chasing the echoes of a love that defied the void itself.</p>`;
+
+      finalStoryText = generatePlainTextStory(names, traits, scenario, randomTwist);
+
+      output.innerHTML = story;
+      output.style.display = 'block';
+      downloadSection.style.display = 'block';
+    });
+
+    function generatePlainTextStory(names, traits, scenario, twist) {
+      let text = '';
+      names.forEach((name, index) => {
+        text += `${name}, known for being ${traits[index]}, `;
+      });
+      text += `became entwined in a tale darker than night: "${scenario}".\n\nYet, as passion collided with peril, ${twist}. 
+Torn between love and doom, they danced through shadows, chasing the echoes of a love that defied the void itself.\n`;
+      return text;
+    }
+
+    function downloadStory() {
+      const blob = new Blob([finalStoryText], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'DarkRomanceStory.txt';
+      a.click();
+
+      URL.revokeObjectURL(url);
+    }
+  </script>
+
+</body>
+</html>
